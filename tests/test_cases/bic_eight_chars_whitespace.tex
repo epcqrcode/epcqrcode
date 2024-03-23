@@ -1,0 +1,28 @@
+%TEST 0
+%BCD
+%002
+%1
+%SCT
+%BFSWDE33
+%Wikimedia Foerdergesellschaft
+%DE33100205000001194700
+%EUR123.45
+%
+%
+%
+%
+
+\documentclass{standalone}
+\usepackage{../../epcqrcode}
+
+\begin{document}
+
+\qrset{height=10cm}%
+\epcqr{
+    name=Wikimedia Foerdergesellschaft,
+    iban=DE33100205000001194700,
+    bic=BFSW DE33,
+    amount=123.45,
+}
+
+\end{document}

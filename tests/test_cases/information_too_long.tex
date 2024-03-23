@@ -1,0 +1,18 @@
+%TEST 1
+%Information possibly too long
+
+
+\documentclass{standalone}
+\usepackage{../../epcqrcode}
+
+\begin{document}
+
+\qrset{height=10cm}%
+\epcqr{
+    name=Wikimedia Foerdergesellschaft,
+    iban=DE33100205000001194700,
+    amount=123.45,
+    information=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB,
+}
+
+\end{document}

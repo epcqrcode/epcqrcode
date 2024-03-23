@@ -1,0 +1,28 @@
+%TEST 0
+%BCD
+%002
+%1
+%SCT
+%
+%Wikimedia Foerdergesellschaft
+%DE33100205000001194700
+%EUR123.45
+%
+%
+%Spende fuer Wikipedia
+%
+
+\documentclass{standalone}
+\usepackage{../../epcqrcode}
+
+\begin{document}
+
+\qrset{height=10cm}%
+\epcqr{
+    name=Wikimedia Foerdergesellschaft,
+    iban=DE33100205000001194700,
+    amount=123.45,
+    text=Spende fuer Wikipedia,
+}
+
+\end{document}

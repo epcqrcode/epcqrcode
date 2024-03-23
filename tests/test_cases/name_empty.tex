@@ -1,0 +1,16 @@
+%TEST 1
+%No name provided
+
+\documentclass{standalone}
+\usepackage{../../epcqrcode}
+
+\begin{document}
+
+\qrset{height=10cm}%
+\epcqr{
+    charset=2,
+    iban=DE33100205000001194700,
+    amount=123.45,
+}
+
+\end{document}

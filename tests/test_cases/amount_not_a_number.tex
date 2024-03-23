@@ -1,0 +1,16 @@
+%TEST 1
+%Amount has wrong format (not a number)
+
+\documentclass{standalone}
+\usepackage{../../epcqrcode}
+
+\begin{document}
+
+\qrset{height=10cm}%
+\epcqr{
+    name=Wikimedia Foerdergesellschaft,
+    iban=DE33100205000001194700,
+    amount=12A.45,
+}
+
+\end{document}

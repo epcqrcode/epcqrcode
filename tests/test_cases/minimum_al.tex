@@ -1,0 +1,27 @@
+%TEST 0
+%BCD
+%002
+%1
+%SCT
+%
+%Wikimedia Foerdergesellschaft
+%AL47212110090000000235698741
+%EUR123.45
+%
+%
+%
+%
+
+\documentclass{standalone}
+\usepackage{../../epcqrcode}
+
+\begin{document}
+
+\qrset{height=10cm}%
+\epcqr{
+    name=Wikimedia Foerdergesellschaft,
+    iban=AL47212110090000000235698741,
+    amount=123.45,
+}
+
+\end{document}

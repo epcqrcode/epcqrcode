@@ -1,0 +1,16 @@
+%TEST 1
+%Wrong Iban length for DE
+
+\documentclass{standalone}
+\usepackage{../../epcqrcode}
+
+\begin{document}
+
+\qrset{height=10cm}%
+\epcqr{
+    name=Wikimedia Foerdergesellschaft,
+    iban=DE3310020500000119470,
+    amount=123.45,
+}
+
+\end{document}

@@ -1,0 +1,16 @@
+%TEST 1
+%Iban check failed
+
+\documentclass{standalone}
+\usepackage{../../epcqrcode}
+
+\begin{document}
+
+\qrset{height=10cm}%
+\epcqr{
+    name=Wikimedia Foerdergesellschaft,
+    iban=DE33100205000001194701,
+    amount=123.45,
+}
+
+\end{document}

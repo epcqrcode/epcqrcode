@@ -1,0 +1,27 @@
+%TEST 0
+%BCD
+%002
+%1
+%SCT
+%
+%Wikimedia Foerdergesellschaft
+%MT84MALT011000012345MTLCAST001S
+%EUR123.45
+%
+%
+%
+%
+
+\documentclass{standalone}
+\usepackage{../../epcqrcode}
+
+\begin{document}
+
+\qrset{height=10cm}%
+\epcqr{
+    name=Wikimedia Foerdergesellschaft,
+    iban=MT84 MALT 0110 0001 2345 MTLC AST0 01S,
+    amount=123.45,
+}
+
+\end{document}
