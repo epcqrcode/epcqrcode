@@ -13,6 +13,8 @@ function cleantex() {
 	for FILE in "${EXT[@]}"; do
 		rm -vf *.$FILE
 	done
+
+	rm -rvf $PKG/
 }
 
 cleantex all
@@ -20,6 +22,11 @@ cleantex all
 $COMPILE "$PKG.ins"
 $COMPILE "$PKG.dtx"
 
-cleantex
+mkdir $PKG
+cp -v $PKG.ins $PKG/
+cp -v $PKG.dtx $PKG/
+cp -v $PKG.pdf $PKG/$PKG-doc.pdf
+cp -v README $PKG/
+zip $PKG.zip -r $PKG/
 
-zip epcqrcode.zip $PKG.dtx $PKG.ins README $PKG.pdf
+cleantex
