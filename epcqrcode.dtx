@@ -1,0 +1,698 @@
+% \iffalse meta-comment
+%
+% Copyright (C) 2024 ⟨your name⟩
+%
+% This file may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either
+% version 1.3 of this license or (at your option) any later
+% version. The latest version of this license is in:
+%
+% http://www.latex-project.org/lppl.txt
+%
+% and version 1.3c or later is part of all distributions of
+% LaTeX version 2008-05-04 or later.
+%
+% \fi
+%
+% \iffalse
+%<package>\NeedsTeXFormat{LaTeX2e}[2022-06-01]%
+%<package>\ProvidesPackage{epcqrcode}[2024-02-07 v1.0 dtx epcqrcode file]%
+%<package>\RequirePackage{qrcode}%
+%<package>\RequirePackage{xstring}%
+%<package>\RequirePackage{calculator}%
+%
+%<*driver>
+\documentclass{ltxdoc}
+\usepackage{epcqrcode}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\PrintChanges
+\PrintIndex
+\OnlyDescription
+\begin{document}
+    \DocInput{epcqrcode.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+% \changes{v1.0}{2024/02/07}{Initial version}
+% \GetFileInfo{epcqrcode.sty}
+%
+% \DoNotIndex{\#,\$,\%,\&,\@,\\,\{,\},\^,\_,\~,\ }
+% \DoNotIndex{\@ne}
+% \DoNotIndex{\advance,\begingroup,\catcode,\closein}
+% \DoNotIndex{\closeout,\day,\def,\edef,\else,\empty,\endgroup}
+%
+% \title{The \textsf{epcqrcode} package\thanks{This document
+% corresponds to \textsf{epcqrcode}~\fileversion,
+% dated~\filedate.}}
+% \author{⟨your name⟩ \\ epc-qr-code@proton.me}
+% \date{February 07, 2024}
+%
+% \maketitle
+%
+% \section{Introduction}
+% This package is a wrapper for the \texttt{qrcode} package.
+% It offers an easy way to generate valid EPC QR codes by providing
+% syntax and validity checks, e.g. verifiying the correctness of the
+% IBAN.
+%
+% \section{Usage}
+%
+% \DescribeMacro{\epcqr}
+% The \texttt{\textbackslash epcqr} command uses the \LaTeX -builtin key-value system
+% to parse the user input. There are 3 mandatory keys to produce a
+% valid EPC QR code: \texttt{name}, \texttt{iban} and \texttt{amount}.
+% The following code produces a minimal example.
+% \\
+% \\
+%{
+%\tt
+%|\epcqr{| \\
+%|   name=Wikimedia Foerdergesellschaft,| \\
+%|   iban=DE33100205000001194700,| \\
+%|   amount=123.45,| \\
+%|}|
+%}
+% \begin{center}
+%    \epcqr{name=Wikimedia Foerdergesellschaft,iban=DE33100205000001194700,amount=123.45}
+% \end{center}
+% Note, that the maximum payload is limited to 334 bytes.
+% More specific information can be found in the guidelines\footnote{https://www.europeanpaymentscouncil.eu/document-library/guidance-documents/quick-response-code-guidelines-enable-data-capture-initiation}.
+% As of now the user is responsible to stay within this limit,
+% if they are using characters which are not part of following
+% character set:
+% (As specified under section 1.4 in the Customer-to-PSP Implementation Guidelines\footnote{https://www.europeanpaymentscouncil.eu/document-library/implementation-guidelines/sepa-credit-transfer-customer-psp-implementation})
+% \begin{center}
+% \texttt{a b c d e f g h i j k l m n o p q r s t u v w x y z}
+% \\
+% \texttt{A B C D E F G H I J K L M N O P Q R S T U V W X Y Z}
+% \\
+% \texttt{0 1 2 3 4 5 6 7 8 9}
+% \\
+% \texttt{/ - ? : ( ) . , ' +}
+% \\
+% \texttt{Space}
+% \end{center}
+% Additionally to the mandatory arguments, the user can provide more information:
+% \\
+% \\
+% \DescribeMacro{bic}
+% (Optional) The BIC code of the Beneficiary Payment Service Provider.
+% \\
+% \\
+% \DescribeMacro{name}
+% (Mandatory) The name of the Beneficiary. Maximum length is 70 characters.
+% \\
+% \\
+% \DescribeMacro{iban}
+% (Mandatory) The IBAN of the account of the Beneficiary
+% \\
+% \\
+% \DescribeMacro{amount}
+% (Mandatory)
+% Amount of the SEPA Credit Transfer in euro.
+% Amount must be larger than or equal to 0.01, and 
+% cannot be larger than 999999999.99.
+% \\
+% \\
+% \DescribeMacro{reason}
+% (Optional)
+% Purpose of the SEPA Credit Transfer.
+% \\
+% \\
+% \DescribeMacro{ref}
+% (Optional)
+% The Remittance Information (a structured creditor reference code).
+% Note: If a reference code is given \texttt{text} must be empty.
+% \\
+% \\
+% \DescribeMacro{text}
+% (Optional)
+% The Remittance Information (an unstructured text).
+% Maximum Length is 140 characters.
+% Note: If a text is given \texttt{ref} must be empty.
+% \\
+% \\
+% \DescribeMacro{information}
+% (Optional)
+% Additional information for the user.
+% Maximum Length is 70 characters.
+%  
+% \section{Options}
+% Since this package is a wrapper for the \texttt{qrcode} package, all of its
+% options can also be specified here using the \texttt{\textbackslash qrset} command.
+% \\
+% \\
+%{\tt
+%|\begin{document}| \\
+%|  \qrset{height=5cm}%| \\
+%|  \epcqr{| \\
+%|      name=Wikimedia Foerdergesellschaft,| \\
+%|      iban=DE33100205000001194700,| \\
+%|      amount=123.45,| \\
+%|  }| \\
+%|\end{document}|
+%}
+% \\
+% \\
+% Changing the level of the QR code does not have an effect, as EPC QR codes
+% have a set level.
+%
+%\StopEventually
+
+\newcommand{\epcqrcode@panic}[1]{\PackageError{epcqr}{#1}{Get some help...}}%
+
+\makeatletter%
+\DeclareKeys[epcqr]{%
+charset         .store = \epcqr@charset,%
+bic             .store = \epcqr@bic,%
+name            .store = \epcqr@name,%
+iban            .store = \epcqr@iban,%
+amount          .store = \epcqr@amount,%
+reason          .store = \epcqr@reason,%
+ref             .store = \epcqr@ref,%
+text            .store = \epcqr@text,%
+information     .store = \epcqr@information%
+}%
+
+\newcounter{epcqrcode@IsBiggerIndex}%
+\newcommand{\epcqrcode@IsBiggerResult}{\empty}%
+\newcommand{\epcqrcode@IsBiggerIter}[2]{%
+    \StrChar{#1}{\value{epcqrcode@IsBiggerIndex}}[\epcqrcode@Firstepcqrcode@Current]%
+    \StrChar{#2}{\value{epcqrcode@IsBiggerIndex}}[\epcqrcode@Secondepcqrcode@Current]%
+    \ifx\epcqrcode@Firstepcqrcode@Current\empty%
+        \renewcommand{\epcqrcode@IsBiggerResult}{equal}%
+    \else%
+        \ifnum\epcqrcode@Firstepcqrcode@Current>\epcqrcode@Secondepcqrcode@Current%
+            \renewcommand{\epcqrcode@IsBiggerResult}{true}%
+        \else
+            \ifnum\epcqrcode@Firstepcqrcode@Current<\epcqrcode@Secondepcqrcode@Current%
+                \renewcommand{\epcqrcode@IsBiggerResult}{false}%
+            \else%
+                \stepcounter{epcqrcode@IsBiggerIndex}%
+                \epcqrcode@IsBiggerIter{#1}{#2}%
+            \fi%
+        \fi%
+    \fi%
+}%
+
+\newcommand{\epcqrcode@IsBigger}[2]{%
+    \renewcommand{\epcqrcode@IsBiggerResult}{\empty}%
+    \StrLen{#1}[\epcqrcode@FirstLength]%
+    \StrLen{#2}[\epcqrcode@SecondLength]%
+    \ifnum\epcqrcode@FirstLength>\epcqrcode@SecondLength%
+        \renewcommand{\epcqrcode@IsBiggerResult}{true}%
+    \else%
+        \ifnum\epcqrcode@FirstLength<\epcqrcode@SecondLength%
+            \renewcommand{\epcqrcode@IsBiggerResult}{false}%
+        \else%
+            \renewcommand{\epcqrcode@IsBiggerResult}{\empty}%
+            \setcounter{epcqrcode@IsBiggerIndex}{1}%
+            \epcqrcode@IsBiggerIter{#1}{#2}%
+        \fi%
+    \fi%
+}%
+
+\newcounter{epcqrcode@ModuloIndex}%
+\newcommand{\epcqrcode@Current}{\empty}%
+\newcommand{\epcqrcode@NextNumberIter}{%
+    \stepcounter{epcqrcode@ModuloIndex}%
+    \StrChar{\epcqrcode@Dividend}{\value{epcqrcode@ModuloIndex}}[\epcqrcode@tmp]%
+    \ifx\epcqrcode@tmp\empty%
+        \relax%
+    \else%
+        \edef\epcqrcode@Current{\epcqrcode@Current\epcqrcode@tmp}%
+        \epcqrcode@IsBigger{\epcqrcode@Current}{\epcqrcode@Divisor}%
+        \IfStrEq{\epcqrcode@IsBiggerResult}{true}{}{%
+            \epcqrcode@NextNumberIter%
+        }%
+    \fi%
+}%
+
+\newcommand{\epcqrcode@Dividend}{\empty}%
+\newcommand{\epcqrcode@Divisor}{\empty}%
+\newcommand{\epcqrcode@ModuloIter}{%
+    \StrLen{\epcqrcode@Dividend}[\epcqrcode@DividendLength]%
+    \ifnum\epcqrcode@DividendLength=\theepcqrcode@ModuloIndex%
+        \renewcommand{\epcqrcode@ModuloResult}{\epcqrcode@Current}%
+    \else%
+        \epcqrcode@NextNumberIter%
+        \epcqrcode@IsBigger{\epcqrcode@Divisor}{\epcqrcode@Current}%
+        \IfStrEq{\epcqrcode@IsBiggerResult}{true}{\renewcommand{\epcqrcode@ModuloResult}{\epcqrcode@Current}}{%
+            \INTEGERQUOTIENT{\epcqrcode@Current}{\epcqrcode@Divisor}{\epcqrcode@tmp}%
+            \MULTIPLY{\epcqrcode@Divisor}{\epcqrcode@tmp}{\epcqrcode@tmp}%
+            \SUBTRACT{\epcqrcode@Current}{\epcqrcode@tmp}{\epcqrcode@Current}%
+            \epcqrcode@ModuloIter%
+        }%
+    \fi%
+}%
+
+\newcommand{\epcqrcode@ModuloResult}{\empty}%
+\newcommand{\epcqrcode@Modulo}[2]{%
+    \renewcommand{\epcqrcode@Current}{\empty}%
+    \renewcommand{\epcqrcode@Dividend}{#1}%
+    \renewcommand{\epcqrcode@Divisor}{#2}%
+    \epcqrcode@IsBigger{\epcqrcode@Divisor}{\epcqrcode@Dividend}%
+    \IfStrEq{\epcqrcode@IsBiggerResult}{true}{\renewcommand{\epcqrcode@ModuloResult}{\epcqrcode@Dividend}}{%
+        \IfStrEq{\epcqrcode@IsBiggerResult}{equal}{\renewcommand{\epcqrcode@ModuloResult}{0}}{%
+            \setcounter{epcqrcode@ModuloIndex}{0}%
+            \epcqrcode@ModuloIter%
+        }%
+    }%
+}%
+
+\newcommand{\epcqrcode@CheckCountryCode}[1]{%
+    \IfSubStr{,RU,LC,MT,SC,JO,KW,MU,EG,BR,QA,PS,UA,AL,AZ,BY,BJ,CI,DO,SV,GT,LB,ML,NI,PL,SN,HU,CY,BF,BI,FR,GA,GR,IT,CM,CG,MG,MR,MC,SM,CF,IR,IS,TR,AO,CV,LY,MZ,PT,ST,DZ,AD,VG,MD,PK,RO,SA,SE,SK,ES,CZ,TN,GI,IQ,IL,TL,AE,BH,BG,CR,DE,GE,IE,ME,RS,VA,GB,HR,LV,LI,CH,BA,EE,KZ,XK,LT,LU,MN,AT,MK,SI,DK,FO,FI,GL,NL,SD,BE,NO,}{,#1,}{}{\epcqrcode@panic{Wrong Country Code}}%
+}%
+
+\newcommand{\epcqrcode@CheckIbanLength}[2]{%
+    \IfStrEq{#1}{RU}{\ifnum 33=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{LC}{\ifnum 32=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{MT}{\ifnum 31=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{SC}{\ifnum 31=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{JO}{\ifnum 30=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{KW}{\ifnum 30=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{MU}{\ifnum 30=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{EG}{\ifnum 29=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{BR}{\ifnum 29=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{QA}{\ifnum 29=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{PS}{\ifnum 29=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{UA}{\ifnum 29=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{AL}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{AZ}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{BY}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{BJ}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{CI}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{DO}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{SV}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{GT}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{LB}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{ML}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{NI}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{PL}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{SN}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{HU}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{CY}{\ifnum 28=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{BF}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{BI}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{FR}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{GA}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{GR}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{IT}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{CM}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{CG}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{MG}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{MR}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{MC}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{SM}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{CF}{\ifnum 27=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{IR}{\ifnum 26=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{IS}{\ifnum 26=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{TR}{\ifnum 26=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{AO}{\ifnum 25=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{CV}{\ifnum 25=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{LY}{\ifnum 25=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{MZ}{\ifnum 25=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{PT}{\ifnum 25=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{ST}{\ifnum 25=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{DZ}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{AD}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{VG}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{MD}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{PK}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{RO}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{SA}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{SE}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{SK}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{ES}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{CZ}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{TN}{\ifnum 24=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{GI}{\ifnum 23=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{IQ}{\ifnum 23=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{IL}{\ifnum 23=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{TL}{\ifnum 23=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{AE}{\ifnum 23=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{BH}{\ifnum 22=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{BG}{\ifnum 22=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{CR}{\ifnum 22=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{DE}{\ifnum 22=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{GE}{\ifnum 22=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{IE}{\ifnum 22=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{ME}{\ifnum 22=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{RS}{\ifnum 22=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{VA}{\ifnum 22=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{GB}{\ifnum 22=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{HR}{\ifnum 21=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{LV}{\ifnum 21=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{LI}{\ifnum 21=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{CH}{\ifnum 21=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{BA}{\ifnum 20=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{EE}{\ifnum 20=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{KZ}{\ifnum 20=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{XK}{\ifnum 20=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{LT}{\ifnum 20=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{LU}{\ifnum 20=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{MN}{\ifnum 20=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{AT}{\ifnum 20=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{MK}{\ifnum 19=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{SI}{\ifnum 19=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{DK}{\ifnum 18=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{FO}{\ifnum 18=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{FI}{\ifnum 18=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{GL}{\ifnum 18=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{NL}{\ifnum 18=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{SD}{\ifnum 18=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{BE}{\ifnum 16=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}%
+    \IfStrEq{#1}{NO}{\ifnum 15=#2\relax\else\epcqrcode@panic{Wrong Iban length for #1}\fi}{}% 
+}%
+
+\newcommand{\epcqrcode@TranslateLetterResult}{\empty}%
+\newcommand{\epcqrcode@TranslateLetter}[1]{%
+    \renewcommand{\epcqrcode@TranslateLetterResult}{\empty}%
+    \IfStrEq{#1}{0}{\renewcommand{\epcqrcode@TranslateLetterResult}{0}}{}%
+    \IfStrEq{#1}{1}{\renewcommand{\epcqrcode@TranslateLetterResult}{1}}{}%
+    \IfStrEq{#1}{2}{\renewcommand{\epcqrcode@TranslateLetterResult}{2}}{}%
+    \IfStrEq{#1}{3}{\renewcommand{\epcqrcode@TranslateLetterResult}{3}}{}%
+    \IfStrEq{#1}{4}{\renewcommand{\epcqrcode@TranslateLetterResult}{4}}{}%
+    \IfStrEq{#1}{5}{\renewcommand{\epcqrcode@TranslateLetterResult}{5}}{}%
+    \IfStrEq{#1}{6}{\renewcommand{\epcqrcode@TranslateLetterResult}{6}}{}%
+    \IfStrEq{#1}{7}{\renewcommand{\epcqrcode@TranslateLetterResult}{7}}{}%
+    \IfStrEq{#1}{8}{\renewcommand{\epcqrcode@TranslateLetterResult}{8}}{}%
+    \IfStrEq{#1}{9}{\renewcommand{\epcqrcode@TranslateLetterResult}{9}}{}%
+    \IfStrEq{#1}{A}{\renewcommand{\epcqrcode@TranslateLetterResult}{10}}{}%
+    \IfStrEq{#1}{B}{\renewcommand{\epcqrcode@TranslateLetterResult}{11}}{}%
+    \IfStrEq{#1}{C}{\renewcommand{\epcqrcode@TranslateLetterResult}{12}}{}%
+    \IfStrEq{#1}{D}{\renewcommand{\epcqrcode@TranslateLetterResult}{13}}{}%
+    \IfStrEq{#1}{E}{\renewcommand{\epcqrcode@TranslateLetterResult}{14}}{}%
+    \IfStrEq{#1}{F}{\renewcommand{\epcqrcode@TranslateLetterResult}{15}}{}%
+    \IfStrEq{#1}{G}{\renewcommand{\epcqrcode@TranslateLetterResult}{16}}{}%
+    \IfStrEq{#1}{H}{\renewcommand{\epcqrcode@TranslateLetterResult}{17}}{}%
+    \IfStrEq{#1}{I}{\renewcommand{\epcqrcode@TranslateLetterResult}{18}}{}%
+    \IfStrEq{#1}{J}{\renewcommand{\epcqrcode@TranslateLetterResult}{19}}{}%
+    \IfStrEq{#1}{K}{\renewcommand{\epcqrcode@TranslateLetterResult}{20}}{}%
+    \IfStrEq{#1}{L}{\renewcommand{\epcqrcode@TranslateLetterResult}{21}}{}%
+    \IfStrEq{#1}{M}{\renewcommand{\epcqrcode@TranslateLetterResult}{22}}{}%
+    \IfStrEq{#1}{N}{\renewcommand{\epcqrcode@TranslateLetterResult}{23}}{}%
+    \IfStrEq{#1}{O}{\renewcommand{\epcqrcode@TranslateLetterResult}{24}}{}%
+    \IfStrEq{#1}{P}{\renewcommand{\epcqrcode@TranslateLetterResult}{25}}{}%
+    \IfStrEq{#1}{Q}{\renewcommand{\epcqrcode@TranslateLetterResult}{26}}{}%
+    \IfStrEq{#1}{R}{\renewcommand{\epcqrcode@TranslateLetterResult}{27}}{}%
+    \IfStrEq{#1}{S}{\renewcommand{\epcqrcode@TranslateLetterResult}{28}}{}%
+    \IfStrEq{#1}{T}{\renewcommand{\epcqrcode@TranslateLetterResult}{29}}{}%
+    \IfStrEq{#1}{U}{\renewcommand{\epcqrcode@TranslateLetterResult}{30}}{}%
+    \IfStrEq{#1}{V}{\renewcommand{\epcqrcode@TranslateLetterResult}{31}}{}%
+    \IfStrEq{#1}{W}{\renewcommand{\epcqrcode@TranslateLetterResult}{32}}{}%
+    \IfStrEq{#1}{X}{\renewcommand{\epcqrcode@TranslateLetterResult}{33}}{}%
+    \IfStrEq{#1}{Y}{\renewcommand{\epcqrcode@TranslateLetterResult}{34}}{}%
+    \IfStrEq{#1}{Z}{\renewcommand{\epcqrcode@TranslateLetterResult}{35}}{}%
+}%
+
+\newcounter{epcqrcode@c}%
+\newcommand{\epcqrcode@TranslateLettersResult}{\empty}%
+\newcommand{\epcqrcode@TranslateLetters}[1]{%
+    \renewcommand{\epcqrcode@TranslateLettersResult}{\empty}%
+    \setcounter{epcqrcode@c}{1}%
+    \epcqrcode@TranslateLettersIter{#1}%
+}%
+
+\newcommand{\epcqrcode@TranslateLettersIter}[1]{%
+    \StrChar{#1}{\theepcqrcode@c}[\epcqrcode@tmp]%
+    \ifx\epcqrcode@tmp\empty%
+        \relax%
+    \else%
+        \epcqrcode@TranslateLetter{\epcqrcode@tmp}%
+        \edef\epcqrcode@current{\epcqrcode@TranslateLetterResult}%
+        \edef\epcqrcode@TranslateLettersResult{\epcqrcode@TranslateLettersResult\epcqrcode@current}%
+        \stepcounter{epcqrcode@c}%
+        \epcqrcode@TranslateLettersIter{#1}%
+    \fi%
+}%
+
+\newcommand{\epcqrcode@CheckIban}[1]{%
+    \StrLen{#1}[\epcqrcode@IbanLength]%
+    \StrLeft{#1}{4}[\epcqrcode@CountryPlusCheck]%
+    \StrRight{\epcqrcode@CountryPlusCheck}{2}[\epcqrcode@Check]%
+    \StrGobbleRight{\epcqrcode@CountryPlusCheck}{2}[\epcqrcode@Country]%
+    \epcqrcode@CheckCountryCode{\epcqrcode@Country}%
+    \epcqrcode@CheckIbanLength{\epcqrcode@Country}{\epcqrcode@IbanLength}%
+    \StrGobbleLeft{#1}{4}[\epcqrcode@Iban]%
+    \epcqrcode@TranslateLetters{\epcqrcode@Iban\epcqrcode@CountryPlusCheck}%
+    \edef\epcqrcode@TranslatedIban{\epcqrcode@TranslateLettersResult}%
+    \epcqrcode@Modulo{\epcqrcode@TranslatedIban}{97}%
+    \ifnum\epcqrcode@ModuloResult=1%
+        \relax%
+    \else%
+        \epcqrcode@panic{Iban check failed}%
+    \fi%
+}%
+
+\newcommand{\epcqrcode@CheckCreditorReference}[1]{%
+    \StrLen{#1}[\epcqrcode@CreditorReferenceLength]%
+    \ifnum\epcqrcode@CreditorReferenceLength>25%
+        \epcqrcode@panic{Creditor reference too long}%
+    \else%
+        \ifnum\epcqrcode@CreditorReferenceLength<5%
+            \epcqrcode@panic{Creditor reference too short}%
+        \fi%
+    \fi%
+    \StrLeft{#1}{4}[\epcqrcode@IdentifierPlusCheck]%
+    \StrGobbleLeft{#1}{4}[\epcqrcode@Reference]%
+    \epcqrcode@TranslateLetters{\epcqrcode@Reference\epcqrcode@IdentifierPlusCheck}%
+    \edef\epcqrcode@TranslatedCreditorReference{\epcqrcode@TranslateLettersResult}%
+    \epcqrcode@Modulo{\epcqrcode@TranslatedCreditorReference}{97}%
+    \ifnum\epcqrcode@ModuloResult=1%
+        \relax%
+    \else%
+        \epcqrcode@panic{Creditor reference check failed}%
+    \fi%
+}%
+
+\newcommand{\epcqrcode@CheckBIC}[1]{%
+    \StrLen{#1}[\epcqrcode@length]%
+    \ifnum8=\epcqrcode@length%
+        \relax%
+    \else%
+        \ifnum11=\epcqrcode@length%
+            \relax%
+        \else%
+            \epcqrcode@panic{Wrong BIC length}%
+        \fi%
+    \fi%
+    \StrChar{#1}{5}[\epcqrcode@FirstCountry]%
+    \StrChar{#1}{6}[\epcqrcode@SecondCountry]%
+    \epcqrcode@CheckCountryCode{\epcqrcode@FirstCountry\epcqrcode@SecondCountry}%
+}%
+
+\newcommand{\epcqrcode@CheckTextLength}[1]{%
+    \StrLen{#1}[\epcqrcode@length]%
+    \ifnum\epcqrcode@length<141\relax\else\PackageWarning{epcqr}{Text possibly too long}\fi%
+}%
+
+\newcommand{\epcqrcode@CheckNameLength}[1]{%
+    \StrLen{#1}[\epcqrcode@length]%
+    \ifnum\epcqrcode@length<71\relax\else\PackageWarning{epcqr}{Name possibly too long}\fi%
+}%
+
+\newcommand{\epcqrcode@CheckReason}[1]{%
+    \IfSubStr{,BENE,BONU,CBFF,CHAR,GOVT,PENS,SALA,SSBE,CBLK,CDCB,CDCD,CDCS,CDOC,CDQC,ETUP,FCOL,MTUP,ACCT,CASH,COLL,CSDB,DEPT,INTC,LIMA,NETT,AGRT,AREN,BEXP,BOCE,COMC,CPYR,GDDS,GDSV,GSCB,LICF,POPE,ROYA,SCVE,SUBS,SUPP,TRAD,COMT,CLPR,DBTC,GOVI,HLRP,INPC,INSU,INTE,LBRI,LIFI,LOAN,LOAR,PENO,PPTI,RINP,TRFD,ADMG,ADVA,BLDM,CCRD,CDBL,CFEE,COST,DCRD,FAND,ICCP,IDCP,IHRP,INSM,MSVC,NOWS,OFEE,OTHR,PADD,PTSP,RCKE,RCPT,REFU,RENT,STDY,TELI,WEBI,ANNI,CAFI,CFDI,CMDT,DERI,DIVD,FREX,HEDG,PRME,SAVG,SECU,SEPI,TREA,ANTS,CVCF,DMEQ,DNTS,HLTC,HLTI,HSPC,ICRF,LTCF,MDCS,VIEW,ALMY,AEMP,BECH,COMM,CSLP,GFRP,GVEA,GVEB,GVEC,GVED,GWLT,EPAY,PAYR,PRCP,RHBS,ESTX,HSTX,INTX,NITX,TAXS,VATX,WHLD,TAXR,AIRB,BUSB,FERB,RLWY,CBTV,ELEC,ENRG,GASB,NWCH,NWCM,OTLC,PHON,WTER,}{,#1,}{}{\epcqrcode@panic{Wrong reason}}%
+}%
+
+\newcommand{\epcqrcode@CheckIfNumber}[1]{%
+    \IfSubStr{,0,1,2,3,4,5,6,7,8,9,}{,#1,}{\relax}{\epcqrcode@panic{Amount has wrong format (not a number)}}%
+}%
+
+\newcommand{\epcqrcode@IterateAmount}[1]{%
+    \StrChar{#1}{\theepcqrcode@c}[\epcqrcode@tmp]%
+    \ifx\epcqrcode@tmp\empty%
+        \relax%
+    \else%
+        \epcqrcode@CheckIfNumber{\epcqrcode@tmp}%
+        \stepcounter{epcqrcode@c}%
+        \epcqrcode@IterateAmount{#1}%
+    \fi%
+}%
+
+\newcommand{\epcqrcode@CheckAmount}[1]{%
+    \edef\epcqrcode@Amount{#1}%
+    \IfSubStr[1]{\epcqrcode@Amount}{.}{%
+        \StrRight{#1}{2}[\epcqrcode@LastTwoChars]%
+        \StrChar{\epcqrcode@LastTwoChars}{1}[\epcqrcode@PotentialDot]%
+        \IfStrEq{\epcqrcode@PotentialDot}{.}{\edef\epcqrcode@Amount{\epcqrcode@Amount0}}{\relax}%
+    }{%
+        \edef\epcqrcode@Amount{\epcqrcode@Amount.00}%
+    }%
+    \StrLen{\epcqrcode@Amount}[\epcqrcode@AmountLength]%
+    \ifnum\epcqrcode@AmountLength>12\epcqrcode@panic{Amount too big}\fi%
+    \ifnum\epcqrcode@AmountLength<4\epcqrcode@panic{Amount too small}\fi%
+    \StrRight{\epcqrcode@Amount}{3}[\epcqrcode@LastThreeChars]%
+    \StrChar{\epcqrcode@LastThreeChars}{1}[\epcqrcode@PotentialDot]%
+    \IfStrEq{\epcqrcode@PotentialDot}{.}{}{\epcqrcode@panic{Amount has wrong format}}%
+    \StrDel[1]{\epcqrcode@Amount}{.}[\epcqrcode@AmountWithoutDot]%
+    \setcounter{epcqrcode@c}{1}%
+    \epcqrcode@IterateAmount{\epcqrcode@AmountWithoutDot}%
+    \ifnum\epcqrcode@AmountLength=4\IfStrEq{\epcqrcode@Amount}{0.00}{\epcqrcode@panic{Amount too small}}{\relax}\fi%
+}%
+
+\newcommand{\epcqrcode@EscapeWhitespaceResult}{\empty}%
+\newcommand{\epcqrcode@EscapeWhitespace}[1]{%
+    \renewcommand{\epcqrcode@EscapeWhitespaceResult}{\empty}%
+    \setcounter{epcqrcode@c}{1}%
+    \epcqrcode@EscapeWhitespaceIter{#1}%
+}%
+
+\newcommand{\epcqrcode@EscapeWhitespaceIter}[1]{%
+    \StrChar{#1}{\theepcqrcode@c}[\epcqrcode@tmp]%
+    \ifx\epcqrcode@tmp\empty%
+        \relax%
+    \else%
+        \IfStrEq{\epcqrcode@tmp}{ }{%
+            \edef\epcqrcode@EscapeWhitespaceResult{\epcqrcode@EscapeWhitespaceResult\ }%
+        }{%
+            \edef\epcqrcode@EscapeWhitespaceResult{\epcqrcode@EscapeWhitespaceResult\epcqrcode@tmp}%
+        }%
+        \stepcounter{epcqrcode@c}%
+        \epcqrcode@EscapeWhitespaceIter{#1}%
+    \fi%
+}%
+
+\newcounter{epcqrcode@OverallLength}%
+\newcommand{\epcqrcode@OverallSize}{%
+    \setcounter{epcqrcode@OverallLength}{25}%
+    \ifx\epcqr@bic\empty%
+        \relax%
+    \else%
+        \StrLen{\epcqrcode@CleanedBic}[\epcqrcode@BicLength]%
+        \addtocounter{epcqrcode@OverallLength}{\epcqrcode@BicLength}%
+    \fi%
+    \StrLen{\epcqrcode@EscapedName}[\epcqrcode@NameLength]%
+    \addtocounter{epcqrcode@OverallLength}{\epcqrcode@NameLength}%
+    \StrLen{\epcqrcode@CleanedIban}[\epcqrcode@IbanLength]%
+    \addtocounter{epcqrcode@OverallLength}{\epcqrcode@IbanLength}%
+    \StrLen{\epcqr@amount}[\epcqrcode@AmountLength]%
+    \addtocounter{epcqrcode@OverallLength}{\epcqrcode@AmountLength}%
+    \ifx\epcqr@reason\empty%
+        \relax%
+    \else%
+        \StrLen{\ecpqr@reason}[\epcqrcode@ReasonLength]%
+        \addtocounter{epcqrcode@OverallLength}{\epcqrcode@ReasonLength}%
+    \fi%
+    \ifx\epcqr@ref\empty%
+        \relax%
+    \else%
+        \StrLen{\epcqr@ref}[\epcqrcode@RefLength]%
+        \addtocounter{epcqrcode@OverallLength}{\epcqrcode@RefLength}%
+    \fi%
+    \ifx\epcqr@text\empty%
+        \relax%
+    \else%
+        \StrLen{\epcqrcode@EscapedText}[\epcqrcode@TextLength]%
+        \addtocounter{epcqrcode@OverallLength}{\epcqrcode@TextLength}%
+    \fi%
+    \ifx\epcqr@information\empty%
+        \relax%
+    \else%
+        \StrLen{\epcqrcode@EscapedInformation}[\epcqrcode@InformationLength]%
+        \addtocounter{epcqrcode@OverallLength}{\epcqrcode@InformationLength}%
+    \fi%
+    \ifnum\theepcqrcode@OverallLength>331%
+        \epcqrcode@panic{Overall payload too big}%
+    \fi%
+}%
+
+\newcounter{epcqrcode@z}%
+\NewDocumentCommand\epcqr{m}{%
+    \begingroup%
+    \SetKeys[epcqr]{#1}%
+
+    \ifx\epcqr@name\@empty\epcqrcode@panic{No name provided}\fi%
+    \epcqrcode@CheckNameLength{\epcqr@name}%
+    \epcqrcode@EscapeWhitespace{\epcqr@name}%
+    \edef\epcqrcode@EscapedName{\epcqrcode@EscapeWhitespaceResult}%
+
+    \ifx\epcqr@iban\@empty\epcqrcode@panic{No iban provided}\fi%
+    \StrDel[0]{\epcqr@iban}{ }[\epcqrcode@CleanedIban]%
+    \epcqrcode@CheckIban{\epcqrcode@CleanedIban}%
+
+    \ifx\epcqr@amount\@empty\epcqrcode@panic{No amount provided}\fi%
+    \epcqrcode@CheckAmount{\epcqr@amount}%
+
+    \ifx\epcqr@ref\@empty%
+        \relax%
+    \else%
+        \ifx\epcqr@text\@empty%
+            \StrDel[0]{\epcqr@ref}{ }[\epcqrcode@CleanedRef]%
+            \epcqrcode@CheckCreditorReference{\epcqrcode@CleanedRef}%
+        \else%
+            \epcqrcode@panic{Either ref or text}%
+        \fi%
+    \fi%
+
+    \ifx\epcqr@text\@empty%
+        \relax%
+    \else%
+        \epcqrcode@EscapeWhitespace{\epcqr@text}%
+        \edef\epcqrcode@EscapedText{\epcqrcode@EscapeWhitespaceResult}%
+    \fi%
+
+    \epcqrcode@CheckTextLength{\epcqr@text}%
+    \ifx\epcqr@bic\@empty%
+        \relax%
+    \else%
+        \StrDel[0]{\epcqr@bic}{ }[\epcqrcode@CleanedBic]%
+        \epcqrcode@CheckBIC{\epcqrcode@CleanedBic}%
+    \fi%
+
+    \ifx\epcqr@reason\@empty\else\epcqrcode@CheckReason{\epcqr@reason}\fi%
+
+    \ifx\epcqr@information\empty%
+        \relax%
+    \else%
+        \epcqrcode@EscapeWhitespace{\epcqr@information}%
+        \edef\epcqrcode@EscapedInformation{\epcqrcode@EscapeWhitespaceResult}%
+        \StrLen{\epcqrcode@EscapedInformation}[\epcqrcode@InfLength]%
+        \ifnum\epcqrcode@InfLength>70%
+            \PackageWarning{epcqr}{Information possibly too long}%
+        \fi%
+    \fi%
+
+    \epcqrcode@OverallSize%
+
+    \setcounter{epcqrcode@z}{4}%
+    \ifx\epcqr@information\empty%
+        \setcounter{epcqrcode@z}{3}%
+        \ifx\epcqr@text\empty%
+            \setcounter{epcqrcode@z}{2}%
+            \ifx\epcqr@ref\empty%
+                \setcounter{epcqrcode@z}{1}%
+                \ifx\epcqr@reason\empty%
+                    \setcounter{epcqrcode@z}{0}%
+                \fi%
+            \fi%
+        \fi%
+    \fi%
+
+    \qrcode[level=M, nolinks]{%
+        BCD\?%
+        002\?%
+        \ifx\epcqr@charset\@empty 1\?\else\epcqr@charset\?\fi%
+        SCT\?%
+        \ifx\epcqr@bic\@empty\?\else\epcqrcode@CleanedBic\?\fi%
+        \epcqrcode@EscapedName\?%
+        \epcqrcode@CleanedIban\?%
+        EUR\epcqr@amount%
+        \ifnum\theepcqrcode@z>0\?\fi%
+        \ifx\epcqr@reason\@empty\else\epcqr@reason\fi%
+        \ifnum\theepcqrcode@z>1\?\fi%
+        \ifx\epcqr@ref\@empty\else\epcqrcode@CleanedRef\fi%
+        \ifnum\theepcqrcode@z>2\?\fi%
+        \ifx\epcqr@text\@empty\else\epcqrcode@EscapedText\fi%
+        \ifnum\theepcqrcode@z>3\?\fi%
+        \ifx\epcqr@information\@empty\else\epcqrcode@EscapedInformation\fi%
+    }%
+    \endgroup%
+}%
+\makeatother%
+% \Finale
+\endinput
