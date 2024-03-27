@@ -5,7 +5,7 @@
 # Usage
 1. Install the dependencies, e.g. with.
 ```python
-python3 -m venv venv && venv/bin/pip install -r requirements
+python3 -m venv venv && venv/bin/pip install -r requirements.txt
 ```
 
 2. Run the script on the test cases.
