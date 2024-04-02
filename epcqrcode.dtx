@@ -559,7 +559,7 @@ information     .store = \epcqr@information%
 
 \newcounter{epcqrcode@OverallLength}%
 \newcommand{\epcqrcode@OverallSize}{%
-    \setcounter{epcqrcode@OverallLength}{25}%
+    \setcounter{epcqrcode@OverallLength}{22}%
     \ifx\epcqr@bic\empty%
         \relax%
     \else%
@@ -570,8 +570,13 @@ information     .store = \epcqr@information%
     \addtocounter{epcqrcode@OverallLength}{\epcqrcode@NameLength}%
     \StrLen{\epcqrcode@CleanedIban}[\epcqrcode@IbanLength]%
     \addtocounter{epcqrcode@OverallLength}{\epcqrcode@IbanLength}%
-    \StrLen{\epcqr@amount}[\epcqrcode@AmountLength]%
-    \addtocounter{epcqrcode@OverallLength}{\epcqrcode@AmountLength}%
+    \ifreasonx\epcqr@amount\empty%
+        \relax%
+    \else%
+        \StrLen{\epcqr@amount}[\epcqrcode@AmountLength]%
+        \addtocounter{epcqrcode@OverallLength}{\epcqrcode@AmountLength}%
+        \addtocounter{epcqrcode@OverallLength}{3}%
+    \fi%
     \ifx\epcqr@reason\empty%
         \relax%
     \else%
@@ -615,8 +620,11 @@ information     .store = \epcqr@information%
     \StrDel[0]{\epcqr@iban}{ }[\epcqrcode@CleanedIban]%
     \epcqrcode@CheckIban{\epcqrcode@CleanedIban}%
 
-    \ifx\epcqr@amount\@empty\epcqrcode@panic{No amount provided}\fi%
-    \epcqrcode@CheckAmount{\epcqr@amount}%
+    \ifx\epcqr@amount\@empty%
+        \relax%
+    \else%
+        \epcqrcode@CheckAmount{\epcqr@amount}%
+    \fi%
 
     \ifx\epcqr@ref\@empty%
         \relax%
@@ -659,15 +667,18 @@ information     .store = \epcqr@information%
 
     \epcqrcode@OverallSize%
 
-    \setcounter{epcqrcode@z}{4}%
+    \setcounter{epcqrcode@z}{5}%
     \ifx\epcqr@information\empty%
-        \setcounter{epcqrcode@z}{3}%
+        \setcounter{epcqrcode@z}{4}%
         \ifx\epcqr@text\empty%
-            \setcounter{epcqrcode@z}{2}%
+            \setcounter{epcqrcode@z}{3}%
             \ifx\epcqr@ref\empty%
-                \setcounter{epcqrcode@z}{1}%
+                \setcounter{epcqrcode@z}{2}%
                 \ifx\epcqr@reason\empty%
-                    \setcounter{epcqrcode@z}{0}%
+                    \setcounter{epcqrcode@z}{1}%
+                    \ifx\epcqr@amount\empty%
+                        \setcounter{epcqrcode@z}{0}%
+                    \fi%
                 \fi%
             \fi%
         \fi%
@@ -680,15 +691,16 @@ information     .store = \epcqr@information%
         SCT\?%
         \ifx\epcqr@bic\@empty\?\else\epcqrcode@CleanedBic\?\fi%
         \epcqrcode@EscapedName\?%
-        \epcqrcode@CleanedIban\?%
-        EUR\epcqr@amount%
+        \epcqrcode@CleanedIban%
         \ifnum\theepcqrcode@z>0\?\fi%
-        \ifx\epcqr@reason\@empty\else\epcqr@reason\fi%
+        \ifx\epcqr@amount\@empty\else EUR\epcqr@amount\fi%
         \ifnum\theepcqrcode@z>1\?\fi%
-        \ifx\epcqr@ref\@empty\else\epcqrcode@CleanedRef\fi%
+        \ifx\epcqr@reason\@empty\else\epcqr@reason\fi%
         \ifnum\theepcqrcode@z>2\?\fi%
-        \ifx\epcqr@text\@empty\else\epcqrcode@EscapedText\fi%
+        \ifx\epcqr@ref\@empty\else\epcqrcode@CleanedRef\fi%
         \ifnum\theepcqrcode@z>3\?\fi%
+        \ifx\epcqr@text\@empty\else\epcqrcode@EscapedText\fi%
+        \ifnum\theepcqrcode@z>4\?\fi%
         \ifx\epcqr@information\@empty\else\epcqrcode@EscapedInformation\fi%
     }%
     \endgroup%
