@@ -1,7 +1,7 @@
 ==============================================================================
 
 The `epcqrcode' package v1.0
-Copyright (C) 2024 <your name>
+Copyright (C) 2024 by David Wedekind, Paul Kantiem,  Dr. rer. nat. Wolf Müller (epc-qr-code@proton.me)
 
 This package is a wrapper for the 'qrcode' package. 
 It generates valid EPC QR codes by providing syntax and validity checks for given inputs.
@@ -32,7 +32,7 @@ epcqrcode.sty
 README (this file)
 epcqrcode.dtx
 epcqrcode.ins
-epcqrcode.pdf (the user manual)
+epcqrcode-doc.pdf (the user manual)
 
 ----------------------------------------------------------------- 
 
@@ -43,5 +43,4 @@ epcqrcode.pdf (the user manual)
   file database. See the FAQ on CTAN at help/uk-tex-faq or
   http://www.tug.ac.uk/faq for more information on this.
     To process the user manual
-- run: pdflatex epcqrcode.dtx
 - run: pdflatex epcqrcode.dtx
