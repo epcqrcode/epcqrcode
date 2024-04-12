@@ -570,7 +570,7 @@ information     .store = \epcqr@information%
     \addtocounter{epcqrcode@OverallLength}{\epcqrcode@NameLength}%
     \StrLen{\epcqrcode@CleanedIban}[\epcqrcode@IbanLength]%
     \addtocounter{epcqrcode@OverallLength}{\epcqrcode@IbanLength}%
-    \ifreasonx\epcqr@amount\empty%
+    \ifx\epcqr@amount\empty%
         \relax%
     \else%
         \StrLen{\epcqr@amount}[\epcqrcode@AmountLength]%
