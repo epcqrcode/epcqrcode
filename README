@@ -1,7 +1,7 @@
 ==============================================================================
 
 The `epcqrcode' package v1.1
-Copyright (C) 2024 by David Wedekind, Paul Kantiem,  Dr. rer. nat. Wolf Müller (epc-qr-code@proton.me)
+Copyright (C) 2024 by David Wedekind, Paul Kantiem, Wolf Müller (epc-qr-code@proton.me)
 
 This package is a wrapper for the 'qrcode' package. 
 It generates valid EPC QR codes by providing syntax and validity checks for given inputs.
