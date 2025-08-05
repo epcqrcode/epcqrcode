@@ -581,7 +581,7 @@ information     .store = \epcqr@information%
     \ifx\epcqr@reason\empty%
         \relax%
     \else%
-        \StrLen{\ecpqr@reason}[\epcqrcode@ReasonLength]%
+        \StrLen{\epcqr@reason}[\epcqrcode@ReasonLength]%
         \addtocounter{epcqrcode@OverallLength}{\epcqrcode@ReasonLength}%
     \fi%
     \ifx\epcqr@ref\empty%
